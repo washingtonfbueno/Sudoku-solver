@@ -26,11 +26,11 @@ export class Sudoku {
                 .length > 0
         ) {
             return false;
-        } else {
-            for (let row of this.grid) {
-                if (row[x].gridItem && row[x].gridItem == number) {
-                    return false;
-                }
+        }
+
+        for (let row of this.grid) {
+            if (row[x].gridItem && row[x].gridItem == number) {
+                return false;
             }
         }
 
@@ -38,20 +38,30 @@ export class Sudoku {
     }
 
     solve() {
-        for (let y = 0; y < 9; y++) {
-            for (let x = 0; x < 9; x++) {
-                if (!this.grid[y][x].gridItem) {
-                    for (let number = 1; number <= 9; number++) {
-                        if (this.validNumber(number.toString(), x, y)) {
-                            this.grid[y][x].gridItem = number.toString();
-                            this.solve();
-                            if (this.grid[8][8].gridItem) {
-                                return this.grid;
+        const helper = (m: number, n: number) => {
+            for (let y = 0; y < 9; y++) {
+                for (let x = 0; x < 9; x++) {
+                    if (!this.grid[y][x].gridItem) {
+                        for (let number = 1; number <= 9; number++) {
+                            if (this.validNumber(number.toString(), x, y)) {
+                                this.grid[y][x].gridItem = number.toString();
+                                helper(m, n);
+                                if (this.grid[m][n].gridItem) {
+                                    return this.grid;
+                                }
+                                this.grid[y][x].gridItem = "";
                             }
-                            this.grid[y][x].gridItem = "";
                         }
+                        return;
                     }
-                    return;
+                }
+            }
+        };
+
+        for (let y = 8; y >= 0; y--) {
+            for (let x = 8; x >= 0; x--) {
+                if (!this.grid[y][x].gridItem) {
+                    return helper(y, x);
                 }
             }
         }
