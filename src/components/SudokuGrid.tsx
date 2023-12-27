@@ -13,19 +13,17 @@ export const SudokuGrid: React.FC<Props> = () => {
                     <input
                         disabled={solved}
                         type="text"
+                        inputMode="numeric"
                         key={`${x}${y}`}
                         value={value}
                         onChange={(event) => handleChangedValue(event, x, y)}
                         className={`h-[5rem] w-[5rem] text-center 
                         ${
                             type == "error" &&
-                            "focus:bg-red-500 bg-red-500 text-white"
+                            "focus:bg-red-500 focus:text-white"
                         }
-                        ${
-                            type == "success" &&
-                            "focus:bg-blue-300 bg-blue-300 text-white"
-                        }
-                        ${type == "normal" && "focus:bg-black"}
+                        ${type == "success" && "bg-blue-300 text-white"}
+                        ${type == "normal" && "focus:bg-black focus:text-white"}
                                 
                         ${
                             x % 3 == 0 && x
