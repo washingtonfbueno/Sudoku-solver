@@ -16,7 +16,7 @@ export const SudokuGrid: React.FC<Props> = () => {
                         key={`${x}${y}`}
                         value={value}
                         onChange={(event) => handleChangedValue(event, x, y)}
-                        className={`h-[6rem] w-[6rem] text-center 
+                        className={`h-[5rem] w-[5rem] text-center 
                         ${
                             type == "error" &&
                             "focus:bg-red-500 bg-red-500 text-white"
