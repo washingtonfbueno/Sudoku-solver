@@ -77,12 +77,13 @@ function App() {
     return (
         <SudokuContext.Provider value={{ grid, handleChangedValue, solved }}>
             <div className="flex flex-col h-screen items-center justify-center space-y-12 font-sans">
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center max-w-[800px] px-24">
                     <h1 className="text-blue-300 text-[5rem] font-[700]">
                         Sudoku Solver
                     </h1>
                     <p className="text-[2rem] text-black font-[300]">
-                        Enter a valid sudoku puzzle to be solved
+                        Enter a valid sudoku puzzle to visualize how the
+                        algorithm will solve it
                     </p>
                 </div>
 
