@@ -50,6 +50,10 @@ export class Sudoku {
     }
 
     validNumber(number: string, x: number, y: number) {
+        if (number == "") {
+            return true;
+        }
+
         let startX = Math.floor(x / 3) * 3;
         let startY = Math.floor(y / 3) * 3;
 
@@ -102,7 +106,7 @@ export class Sudoku {
                                     x,
                                     y,
                                     value: "",
-                                    type: "",
+                                    type: "normal",
                                 });
                             }
                         }

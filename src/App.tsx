@@ -12,6 +12,7 @@ interface SudokuC {
         x: number,
         y: number
     ) => void;
+    solved: boolean;
 }
 
 const sudoku = new Sudoku();
@@ -24,8 +25,9 @@ function App() {
     );
 
     const [solving, setSolving] = useState(false);
+    const [solved, setSolved] = useState(false);
 
-    const handleChangedValue = (
+    const handleChangedValue = async (
         event: React.FormEvent<HTMLInputElement>,
         x: number,
         y: number
@@ -36,41 +38,44 @@ function App() {
             return;
         }
 
-        sudoku.grid[y][x].value = value;
+        if (!sudoku.validNumber(value, x, y)) {
+            sudoku.grid[y][x].type = "error";
+            setGrid(JSON.parse(JSON.stringify(sudoku.grid)));
 
+            await new Promise((r) => setTimeout(r, 1000));
+            sudoku.grid[y][x].type = "normal";
+            setGrid(JSON.parse(JSON.stringify(sudoku.grid)));
+            return;
+        }
+
+        sudoku.grid[y][x].value = value;
         setGrid(JSON.parse(JSON.stringify(sudoku.grid)));
     };
 
     const solve = async () => {
         setSolving(true);
-
+        setSolved(true);
         let output: { x: number; y: number; value: string; type: string }[] =
             [];
 
         const setValues = async () => {
             for (let { x, y, value, type } of output) {
-                const newGrid = [...grid];
+                grid[y][x].value = value;
+                grid[y][x].type = type;
 
-                newGrid[y][x].value = value;
-                newGrid[y][x].type = type;
-
-                setGrid(newGrid);
-                await new Promise((r) => setTimeout(r, 10000 / output.length));
+                setGrid([...grid]);
+                await new Promise((r) => setTimeout(r, 5));
             }
         };
 
-        try {
-            output = sudoku.solveSudoku()!;
-            await setValues();
-        } catch (err) {
-            console.log(err);
-        }
+        output = sudoku.solveSudoku()!;
+        await setValues();
 
         setSolving(false);
     };
 
     return (
-        <SudokuContext.Provider value={{ grid, handleChangedValue }}>
+        <SudokuContext.Provider value={{ grid, handleChangedValue, solved }}>
             <div className="flex flex-col h-screen items-center justify-center space-y-12 font-sans">
                 <div className="flex flex-col items-center">
                     <h1 className="text-blue-300 text-[5rem] font-[700]">
@@ -80,15 +85,14 @@ function App() {
                         Enter a valid sudoku puzzle to be solved
                     </p>
                 </div>
-                <div className="flex space-y-20 md:space-y-0 md:space-x-20 flex-col md:flex-row">
-                    <SudokuGrid />
-                </div>
 
-                <div className="flex space-x-8">
+                <SudokuGrid />
+
+                <div className="space-x-4">
                     <button
                         onClick={() => solve()}
-                        className={`text-gray-200 text-[2rem] bg-blue-300 rounded-2xl py-2 px-5 hover:bg-blue-400 focus:outline-none ${
-                            solving && "hidden"
+                        className={`text-gray-200 text-[2rem] bg-blue-300 rounded-2xl py-2 w-56 hover:bg-blue-400 focus:outline-none ${
+                            solved && "hidden"
                         }`}
                     >
                         Solve
@@ -97,9 +101,10 @@ function App() {
                     <button
                         onClick={() => {
                             sudoku.reset();
+                            setSolved(false);
                             setGrid(JSON.parse(JSON.stringify(sudoku.grid)));
                         }}
-                        className={`text-gray-200 text-[2rem] bg-red-300 rounded-2xl py-2 px-5 hover:bg-red-400 focus:outline-none ${
+                        className={`text-gray-200 text-[2rem] bg-red-300 rounded-2xl py-2 w-56 hover:bg-red-400 focus:outline-none ${
                             solving ? "hidden" : ""
                         }`}
                     >
@@ -109,13 +114,14 @@ function App() {
                     <button
                         onClick={() => {
                             sudoku.useRandomSudokuGrid();
+                            setSolved(false);
                             setGrid(JSON.parse(JSON.stringify(sudoku.grid)));
                         }}
-                        className={`text-gray-200 text-[2rem] bg-gray-400 rounded-2xl py-2 px-5 hover:bg-gray-500 focus:outline-none ${
+                        className={`text-gray-200 text-[2rem] bg-gray-400 rounded-2xl py-2 w-56 hover:bg-gray-500 focus:outline-none ${
                             solving ? "hidden" : ""
                         }`}
                     >
-                        Random
+                        Randomize
                     </button>
                 </div>
             </div>
